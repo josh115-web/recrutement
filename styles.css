@@ -1,0 +1,127 @@
+/* Custom CSS Styles for Petroleum Club HR Evaluation Portal */
+
+/* Font Family Fallback setup */
+body {
+    font-family: 'Inter', 'Cairo', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(51, 65, 85, 0.8);
+    border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #FF6300;
+}
+
+/* Custom Input Range Styling */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #1E293B;
+    border-radius: 6px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #FF6300;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 99, 0, 0.5);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.25);
+    background: #EA580C;
+}
+
+/* Card Hover Glow */
+.candidate-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.candidate-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px -10px rgba(255, 99, 0, 0.15);
+}
+
+/* Rank #1 Crown Sparkle Glow */
+.rank-1-glow {
+    position: relative;
+    box-shadow: 0 0 25px -5px rgba(255, 99, 0, 0.25);
+}
+
+.rank-1-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #FF6300, #F59E0B, #FF6300);
+    border-radius: 1.5rem 1.5rem 0 0;
+}
+
+/* Modal Animations */
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-animate-in {
+    animation: modalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Toast Notification Animation */
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes toastOut {
+    from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9);
+    }
+}
+
+.toast-enter {
+    animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast-exit {
+    animation: toastOut 0.25s ease-in forwards;
+}

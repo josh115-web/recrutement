@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PETROLEUM CLUB SKIKDA | HR Evaluation Portal 2026/2027</title>
+    
+    <!-- Google Fonts: Inter & Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        petroleum: {
+                            DEFAULT: '#FF6300',
+                            50: '#FFF7ED',
+                            100: '#FFEDD5',
+                            200: '#FED7AA',
+                            300: '#FDBA74',
+                            400: '#FB923C',
+                            500: '#FF6300',
+                            600: '#EA580C',
+                            700: '#C2410C',
+                            800: '#9A3412',
+                            900: '#7C2D12'
+                        },
+                        darkslate: {
+                            700: '#334155',
+                            800: '#1E293B',
+                            900: '#0F172A',
+                            950: '#090D16'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Cairo', 'sans-serif'],
+                        cairo: ['Cairo', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-darkslate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-petroleum-500 selection:text-white antialiased">
+
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-30 bg-darkslate-900/90 backdrop-blur-md border-b border-slate-800 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-3.5">
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-petroleum-500 to-amber-500 rounded-xl blur opacity-40 group-hover:opacity-75 transition duration-300"></div>
+                        <div class="relative bg-darkslate-800 p-1.5 rounded-xl border border-petroleum-500/30 flex items-center justify-center">
+                            <img src="logo.png" alt="Petroleum Club Skikda Logo" class="h-10 w-10 object-contain drop-shadow">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                                <span class="text-petroleum-500">PETROLEUM CLUB</span> SKIKDA
+                            </h1>
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-petroleum-500/10 text-petroleum-400 border border-petroleum-500/20">HR Portal</span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-medium flex items-center gap-1.5 mt-0.5">
+                            <span>Université 20 Août 1955 - Skikda</span>
+                            <span class="text-slate-600">•</span>
+                            <span class="text-amber-400 font-semibold">Campagne 2026/2027</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sync Status Pill (Mobile) -->
+                <div class="md:hidden">
+                    <button id="syncStatusBtnMobile" class="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300">
+                        <span id="syncDotMobile" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                        <span id="syncTextMobile">Local</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
+                <!-- Sync Status Pill (Desktop) -->
+                <button id="syncStatusBtn" title="Cliquer pour configurer l'API Google Apps Script" class="hidden md:flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-slate-300 transition cursor-pointer">
+                    <span id="syncDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="syncText" class="font-medium">Connecté à Google Sheets</span>
+                </button>
+
+                <!-- Settings Modal Trigger -->
+                <button id="openSettingsBtn" title="Configuration API Google Sheets" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/80 transition flex items-center justify-center">
+                    <i class="fa-solid fa-gear text-sm"></i>
+                </button>
+
+                <!-- Export Data Trigger -->
+                <div class="relative inline-block text-left">
+                    <button id="exportDropdownBtn" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/80 transition flex items-center justify-center" title="Exporter les données">
+                        <i class="fa-solid fa-download text-sm"></i>
+                    </button>
+                    <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 rounded-xl shadow-2xl bg-darkslate-800 border border-slate-700 z-50 overflow-hidden">
+                        <div class="py-1">
+                            <button id="exportCSVBtn" class="w-full text-left px-4 py-2.5 text-xs text-slate-200 hover:bg-petroleum-500/10 hover:text-petroleum-400 flex items-center gap-2.5">
+                                <i class="fa-solid fa-file-csv text-emerald-400"></i> Exporter en CSV
+                            </button>
+                            <button id="exportJSONBtn" class="w-full text-left px-4 py-2.5 text-xs text-slate-200 hover:bg-petroleum-500/10 hover:text-petroleum-400 flex items-center gap-2.5">
+                                <i class="fa-solid fa-file-code text-amber-400"></i> Exporter en JSON
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Action: + Evaluate Candidate -->
+                <button id="openAddModalBtn" class="flex-1 md:flex-initial flex items-center justify-center gap-2 bg-gradient-to-r from-petroleum-500 to-petroleum-600 hover:from-petroleum-600 hover:to-petroleum-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-petroleum-500/20 hover:shadow-petroleum-500/30 transition transform active:scale-95">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Évaluer un candidat</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+
+        <!-- METRICS / STATS OVERVIEW CARDS -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <!-- Stat 1: Total Candidats -->
+            <div class="bg-darkslate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 relative overflow-hidden group hover:border-slate-700 transition">
+                <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-petroleum-500/10 rounded-full blur-xl group-hover:bg-petroleum-500/20 transition"></div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Candidats</p>
+                        <h3 id="statTotalCandidates" class="text-2xl sm:text-3xl font-extrabold text-white mt-1">0</h3>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-petroleum-500/10 border border-petroleum-500/20 text-petroleum-500 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-xs text-slate-400 flex items-center gap-1">
+                    <i class="fa-solid fa-trophy text-amber-400"></i>
+                    <span>Classement par mérite en direct</span>
+                </div>
+            </div>
+
+            <!-- Stat 2: Moyenne Générale -->
+            <div class="bg-darkslate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 relative overflow-hidden group hover:border-slate-700 transition">
+                <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition"></div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Moyenne Globale</p>
+                        <h3 id="statAverageScore" class="text-2xl sm:text-3xl font-extrabold text-white mt-1">0.00 <span class="text-xs font-normal text-slate-500">/20</span></h3>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-xs text-slate-400 flex items-center gap-1">
+                    <span id="statAverageRatingLabel" class="text-emerald-400 font-medium">--</span>
+                </div>
+            </div>
+
+            <!-- Stat 3: Top Score -->
+            <div class="bg-darkslate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 relative overflow-hidden group hover:border-slate-700 transition">
+                <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition"></div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Meilleure Note</p>
+                        <h3 id="statTopScore" class="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">0.00 <span class="text-xs font-normal text-slate-500">/20</span></h3>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-xs text-slate-400 truncate" id="statTopCandidateName">
+                    Aucun candidat
+                </div>
+            </div>
+
+            <!-- Stat 4: Ponctualité -->
+            <div class="bg-darkslate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 relative overflow-hidden group hover:border-slate-700 transition">
+                <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition"></div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Taux à l'Heure</p>
+                        <h3 id="statOnTimeRate" class="text-2xl sm:text-3xl font-extrabold text-white mt-1">0%</h3>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-xs text-slate-400 flex items-center justify-between">
+                    <span id="statOnTimeCount">0 à l'heure</span>
+                    <span id="statLateCount" class="text-red-400 font-medium">0 retard</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTERS & HASHTAGS SEARCH CONTROL BAR -->
+        <section class="bg-darkslate-900/90 border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-col space-y-3">
+            
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <!-- Global Search Input (Matches Name, Email, Remarks, Hashtags) -->
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-hashtag absolute left-3.5 top-1/2 -translate-y-1/2 text-petroleum-400 text-sm"></i>
+                    <input type="text" id="searchInput" placeholder="Recherche (ex: #Python, #Pétrochimie, Nom...)" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-petroleum-500 focus:ring-1 focus:ring-petroleum-500 transition">
+                    <button id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Filters Group -->
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <!-- Specialty Hashtags Dynamic Filter -->
+                    <select id="filterSpecialty" class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-petroleum-500 transition">
+                        <option value="ALL">🏷️ Toute Spécialité (#)</option>
+                    </select>
+
+                    <!-- Skills Hashtags Dynamic Filter -->
+                    <select id="filterSkill" class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-petroleum-500 transition">
+                        <option value="ALL">⚡ Tous les Skills (#)</option>
+                    </select>
+
+                    <!-- Level Filter -->
+                    <select id="filterLevel" class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-petroleum-500 transition">
+                        <option value="ALL">Tous les niveaux</option>
+                        <option value="L1">L1 (Licence 1)</option>
+                        <option value="L2">L2 (Licence 2)</option>
+                        <option value="L3">L3 (Licence 3)</option>
+                        <option value="M1">Master 1 (M1)</option>
+                        <option value="M2">Master 2 (M2)</option>
+                    </select>
+
+                    <!-- Punctuality Filter -->
+                    <select id="filterPunctuality" class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-petroleum-500 transition">
+                        <option value="ALL">Toute ponctualité</option>
+                        <option value="ON_TIME">À l'heure uniquement</option>
+                        <option value="LATE">En retard uniquement</option>
+                    </select>
+                    
+                    <!-- Reset Filters Button -->
+                    <button id="resetFiltersBtn" title="Réinitialiser les filtres" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+                        <i class="fa-solid fa-rotate-left text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- Counter Info -->
+                <div class="text-xs text-slate-400 font-medium w-full md:w-auto text-right">
+                    <span id="visibleCandidatesCount">0</span> candidat(s) affiché(s)
+                </div>
+            </div>
+
+            <!-- Active Hashtags Quick Bar -->
+            <div id="activeHashtagsBar" class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/60 text-xs">
+                <span class="text-[11px] text-slate-500 font-medium mr-1">Hashtags Populaires :</span>
+                <!-- Dynamically populated hashtag pills -->
+            </div>
+        </section>
+
+        <!-- CANDIDATES CARDS GRID SECTION -->
+        <section>
+            <!-- Loading Spinner (Shown during API fetch) -->
+            <div id="loadingState" class="hidden py-16 text-center space-y-3">
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-petroleum-500 border-t-transparent"></div>
+                <p class="text-sm text-slate-400">Chargement et classement des candidats en cours...</p>
+            </div>
+
+            <!-- Empty State (No candidates match criteria) -->
+            <div id="emptyState" class="hidden py-16 text-center bg-darkslate-900/50 border border-dashed border-slate-800 rounded-3xl p-8 space-y-4">
+                <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto text-slate-500 text-2xl">
+                    <i class="fa-solid fa-user-slash"></i>
+                </div>
+                <div>
+                    <h4 class="text-base font-bold text-slate-200">Aucun candidat trouvé</h4>
+                    <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">Aucun candidat ne correspond à vos critères de recherche hashtag ou aucune évaluation n'a été enregistrée.</p>
+                </div>
+                <button id="emptyAddBtn" class="inline-flex items-center gap-2 text-xs font-bold bg-petroleum-500 hover:bg-petroleum-600 text-white px-4 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-plus"></i> Ajouter une première évaluation
+                </button>
+            </div>
+
+            <!-- Cards Grid Container -->
+            <div id="candidatesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated candidate cards -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-darkslate-900 border-t border-slate-800 py-6 mt-12 text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <img src="logo.png" alt="Logo" class="h-6 w-6 opacity-75">
+                <p>© 2026 Petroleum Club Skikda — Université 20 Août 1955. Tous droits réservés.</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span>Commission RH Recrutement</span>
+                <span>•</span>
+                <button id="footerGASLink" class="text-slate-400 hover:text-petroleum-400 underline transition">Statut WebApp GAS</button>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL 1: EVALUATE / EDIT CANDIDATE MODAL   -->
+    <!-- ========================================== -->
+    <div id="candidateModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
+        <div class="relative w-full max-w-3xl bg-darkslate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden my-8 transform transition-all">
+            
+            <!-- Modal Header -->
+            <div class="bg-darkslate-800/80 px-6 py-4 border-b border-slate-800 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-petroleum-500/10 border border-petroleum-500/20 text-petroleum-500 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-clipboard-user"></i>
+                    </div>
+                    <div>
+                        <h3 id="modalTitle" class="text-base font-extrabold text-white">Évaluer un Candidat</h3>
+                        <p class="text-xs text-slate-400">Grille d'évaluation scientifique & RH</p>
+                    </div>
+                </div>
+                <button id="closeCandidateModalBtn" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Form Body -->
+            <form id="candidateForm" class="p-6 space-y-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
+                <input type="hidden" id="candidateId" value="">
+
+                <!-- SECTION A: INFORMATIONS PERSONNELLES, HASHTAGS & PONCTUALITÉ -->
+                <div class="space-y-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-petroleum-400 flex items-center gap-2">
+                        <i class="fa-solid fa-id-card"></i> 1. Identité, Hashtags & Arrivée
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Nom Complet -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Nom & Prénom <span class="text-red-400">*</span></label>
+                            <input type="text" id="fullName" required placeholder="Ex: Mohamed Amine Benali" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-petroleum-500 focus:ring-1 focus:ring-petroleum-500 outline-none">
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Adresse Email <span class="text-red-400">*</span></label>
+                            <input type="email" id="email" required placeholder="Ex: m.benali@univ-skikda.dz" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-petroleum-500 focus:ring-1 focus:ring-petroleum-500 outline-none">
+                        </div>
+
+                        <!-- Spécialité (Écriture libre comme Hashtags) -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">
+                                Spécialité <span class="text-petroleum-400 font-bold">(Libre en Hashtags #)</span> <span class="text-red-400">*</span>
+                            </label>
+                            <input type="text" id="specialty" required placeholder="Ex: #GénieDesProcédés #Pétrochimie" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-petroleum-500 focus:ring-1 focus:ring-petroleum-500 outline-none">
+                            <p class="text-[10px] text-slate-400 mt-1">Vous pouvez écrire librement avec des hashtags (ex: #GénieDesProcédés #Raffinage)</p>
+                        </div>
+
+                        <!-- Skills & Compétences (Hashtags) -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">
+                                Skills & Compétences <span class="text-blue-400 font-bold">(en Hashtags #)</span>
+                            </label>
+                            <input type="text" id="skillsHashtags" placeholder="Ex: #Python #SolidWorks #Management #Event" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-petroleum-500 focus:ring-1 focus:ring-petroleum-500 outline-none">
+                            <p class="text-[10px] text-slate-400 mt-1">Séparer les compétences par des hashtags (ex: #SolidWorks #Communication #HSE)</p>
+                        </div>
+
+                        <!-- Niveau d'étude -->
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Niveau d'étude <span class="text-red-400">*</span></label>
+                            <select id="studyLevel" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white focus:border-petroleum-500 outline-none">
+                                <option value="L1">Licence 1 (L1)</option>
+                                <option value="L2">Licence 2 (L2)</option>
+                                <option value="L3">Licence 3 (L3)</option>
+                                <option value="M1">Master 1 (M1)</option>
+                                <option value="M2">Master 2 (M2)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Horodatage & Calculation du retard -->
+                    <div class="pt-2 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Heure Convoquée</label>
+                            <input type="time" id="scheduledTime" value="09:00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-petroleum-500">
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-xs font-medium text-slate-400">Heure d'Arrivée</label>
+                                <button type="button" id="setNowBtn" class="text-[10px] text-petroleum-400 hover:underline font-semibold">Maintenant</button>
+                            </div>
+                            <input type="time" id="arrivalTime" value="09:00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-petroleum-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Statut Retard</label>
+                            <div id="delayBadgeDisplay" class="h-8 flex items-center justify-center px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+                                <i class="fa-solid fa-circle-check mr-1.5"></i> À l'heure (0 min)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- SECTION B: NOTE FORMULAIRE (/20) -->
+                <div class="space-y-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-file-signature"></i> 2. Evaluation Formulaire de Candidature
+                        </h4>
+                        <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                            Note: <span id="formTotalDisplay">15.00</span> / 20
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Sub 1: Motivation (/5) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Motivation & Engagement</span>
+                                <span class="font-bold text-amber-400"><span id="val_motivation">4</span> / 5</span>
+                            </div>
+                            <input type="range" id="score_motivation" min="0" max="5" step="0.5" value="4" class="w-full accent-amber-500 cursor-pointer">
+                        </div>
+
+                        <!-- Sub 2: Bénévolat & Expérience (/5) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Bénévolat & Vie Associative</span>
+                                <span class="font-bold text-amber-400"><span id="val_benevolat">3.5</span> / 5</span>
+                            </div>
+                            <input type="range" id="score_benevolat" min="0" max="5" step="0.5" value="3.5" class="w-full accent-amber-500 cursor-pointer">
+                        </div>
+
+                        <!-- Sub 3: Idées & Vision (/5) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Idées de Projets / Vision</span>
+                                <span class="font-bold text-amber-400"><span id="val_idees">4</span> / 5</span>
+                            </div>
+                            <input type="range" id="score_idees" min="0" max="5" step="0.5" value="4" class="w-full accent-amber-500 cursor-pointer">
+                        </div>
+
+                        <!-- Sub 4: Disponibilité (/5) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Disponibilité & Temps accordé</span>
+                                <span class="font-bold text-amber-400"><span id="val_disponibilite">3.5</span> / 5</span>
+                            </div>
+                            <input type="range" id="score_disponibilite" min="0" max="5" step="0.5" value="3.5" class="w-full accent-amber-500 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- SECTION C: SKILLS & ÉTUDE (/20) -->
+                <div class="space-y-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap"></i> 3. Compétences & Académique
+                        </h4>
+                        <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400">
+                            Note: <span id="skillsTotalDisplay">15.00</span> / 20
+                        </span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- Sub 1: Hard Skills (/8) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Hard Skills & Techniques Club</span>
+                                <span class="font-bold text-blue-400"><span id="val_hardskills">6</span> / 8</span>
+                            </div>
+                            <input type="range" id="score_hardskills" min="0" max="8" step="0.5" value="6" class="w-full accent-blue-500 cursor-pointer">
+                        </div>
+
+                        <!-- Sub 2: Parcours Académique (/6) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Parcours Académique & Maîtrise des sujets</span>
+                                <span class="font-bold text-blue-400"><span id="val_parcours">4.5</span> / 6</span>
+                            </div>
+                            <input type="range" id="score_parcours" min="0" max="6" step="0.5" value="4.5" class="w-full accent-blue-500 cursor-pointer">
+                        </div>
+
+                        <!-- Sub 3: Cohérence (/6) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Cohérence du profil avec le pôle souhaité</span>
+                                <span class="font-bold text-blue-400"><span id="val_coherence">4.5</span> / 6</span>
+                            </div>
+                            <input type="range" id="score_coherence" min="0" max="6" step="0.5" value="4.5" class="w-full accent-blue-500 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- SECTION D: SITUATION RH (/20) -->
+                <div class="space-y-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                            <i class="fa-solid fa-handshake-angle"></i> 4. Mise en Situation RH
+                        </h4>
+                        <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                            Note: <span id="rhTotalDisplay">15.00</span> / 20
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Sub 1: Gestion du temps (/5) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Gestion du Temps & Priorités</span>
+                                <span class="font-bold text-emerald-400"><span id="val_gestionTemps">4</span> / 5</span>
+                            </div>
+                            <input type="range" id="score_gestionTemps" min="0" max="5" step="0.5" value="4" class="w-full accent-emerald-500 cursor-pointer">
+                        </div>
+
+                        <!-- Sub 2: Gestion du Stress (/5) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Gestion du Stress & Adaptabilité</span>
+                                <span class="font-bold text-emerald-400"><span id="val_stress">3.5</span> / 5</span>
+                            </div>
+                            <input type="range" id="score_stress" min="0" max="5" step="0.5" value="3.5" class="w-full accent-emerald-500 cursor-pointer">
+                        </div>
+
+                        <!-- Sub 3: Travail d'équipe (/5) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Esprit d'Équipe & Communication</span>
+                                <span class="font-bold text-emerald-400"><span id="val_travailEquipe">4</span> / 5</span>
+                            </div>
+                            <input type="range" id="score_travailEquipe" min="0" max="5" step="0.5" value="4" class="w-full accent-emerald-500 cursor-pointer">
+                        </div>
+
+                        <!-- Sub 4: Éthique (/5) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Éthique, Respect & Valeurs</span>
+                                <span class="font-bold text-emerald-400"><span id="val_ethique">3.5</span> / 5</span>
+                            </div>
+                            <input type="range" id="score_ethique" min="0" max="5" step="0.5" value="3.5" class="w-full accent-emerald-500 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- LIVE FINAL SCORE CALCULATOR SUMMARY CARD -->
+                <div class="bg-gradient-to-r from-petroleum-900/60 via-darkslate-800 to-darkslate-900 p-5 rounded-2xl border border-petroleum-500/40 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-semibold text-petroleum-400 uppercase tracking-widest">Calcul Automatique en Direct</span>
+                        <h4 class="text-lg font-bold text-white">NOTE GÉNÉRALE FINALE</h4>
+                        <p class="text-xs text-slate-400">Moyenne exacte des 3 notes (Formulaire + Skills + RH) / 3</p>
+                    </div>
+
+                    <div class="text-center sm:text-right bg-slate-950/80 px-5 py-3 rounded-2xl border border-petroleum-500/30">
+                        <div id="liveFinalScore" class="text-3xl font-black text-petroleum-400 tracking-tight">
+                            15.00 <span class="text-sm text-slate-500 font-normal">/ 20</span>
+                        </div>
+                        <span id="scoreRatingBadge" class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">
+                            Excellent Profil
+                        </span>
+                    </div>
+                </div>
+
+
+                <!-- SECTION E: REMARQUES DU JURY -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Remarques & Avis de la Commission RH</label>
+                    <textarea id="remarks" rows="3" placeholder="Saisissez les observations clés, points forts, axes d'amélioration ou recommandations du jury..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:border-petroleum-500 outline-none resize-none"></textarea>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="pt-4 border-t border-slate-800 flex items-center justify-end space-x-3">
+                    <button type="button" id="cancelCandidateBtn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 hover:text-white transition">
+                        Annuler
+                    </button>
+                    <button type="submit" id="saveCandidateBtn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-petroleum-500 to-petroleum-600 hover:from-petroleum-600 hover:to-petroleum-700 text-white text-xs font-bold shadow-lg shadow-petroleum-500/20 transition flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Enregistrer l'évaluation</span>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL 2: GAS CONFIGURATION & APPS SCRIPT   -->
+    <!-- ========================================== -->
+    <div id="settingsModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="relative w-full max-w-2xl bg-darkslate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden my-8 transform transition-all">
+            
+            <div class="bg-darkslate-800/80 px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-petroleum-500/10 border border-petroleum-500/20 text-petroleum-500 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-white">Connexion Google Sheets API</h3>
+                        <p class="text-xs text-slate-400">Google Apps Script Web App Integration (avec Hashtags Spécialité & Skills)</p>
+                    </div>
+                </div>
+                <button id="closeSettingsModalBtn" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
+                <!-- Web App URL Input -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-200">URL du Web App Google Apps Script</label>
+                    <div class="relative">
+                        <input type="url" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-3.5 pr-10 py-2.5 text-xs text-slate-200 focus:border-petroleum-500 outline-none">
+                        <button id="testGasUrlBtn" title="Tester la connexion" class="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg transition">
+                            Tester
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-400">
+                        Cette URL permet de synchroniser les candidats et leurs hashtags de compétences directement avec votre feuille Google Sheets en temps réel.
+                    </p>
+                </div>
+
+                <!-- Google Apps Script Source Code Helper -->
+                <div class="space-y-2 bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                            <i class="fa-code fa-solid"></i> Code Google Apps Script (Mis à jour Hashtags)
+                        </span>
+                        <button id="copyGasCodeBtn" class="text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg transition flex items-center gap-1">
+                            <i class="fa-regular fa-copy"></i> Copier le code GAS
+                        </button>
+                    </div>
+                    <pre class="bg-darkslate-950 p-3 rounded-xl border border-slate-800 text-[11px] text-emerald-400 font-mono overflow-x-auto max-h-48 custom-scrollbar">
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  var result = [];
+  
+  for (var i = 1; i &lt; data.length; i++) {
+    var row = data[i];
+    if (!row[0]) continue;
+    var candidate = {
+      id: row[0],
+      fullName: row[1],
+      email: row[2],
+      specialty: row[3],
+      skillsHashtags: row[4] || "",
+      studyLevel: row[5],
+      scheduledTime: row[6],
+      arrivalTime: row[7],
+      delayMinutes: Number(row[8] || 0),
+      formulaireScore: Number(row[9] || 0),
+      skillsScore: Number(row[10] || 0),
+      rhScore: Number(row[11] || 0),
+      finalScore: Number(row[12] || 0),
+      remarks: row[13] || "",
+      updatedAt: row[14] || new Date().toISOString()
+    };
+    result.push(candidate);
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+    var action = contents.action;
+    var item = contents.data;
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = sheet.getDataRange().getValues();
+    
+    if (action === 'add') {
+      sheet.appendRow([
+        item.id, item.fullName, item.email, item.specialty, item.skillsHashtags, item.studyLevel,
+        item.scheduledTime, item.arrivalTime, item.delayMinutes,
+        item.formulaireScore, item.skillsScore, item.rhScore, item.finalScore,
+        item.remarks, item.updatedAt
+      ]);
+      return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Ajouté' })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    if (action === 'update') {
+      for (var i = 1; i &lt; data.length; i++) {
+        if (data[i][0] == item.id) {
+          var rowNum = i + 1;
+          sheet.getRange(rowNum, 1, 1, 15).setValues([[
+            item.id, item.fullName, item.email, item.specialty, item.skillsHashtags, item.studyLevel,
+            item.scheduledTime, item.arrivalTime, item.delayMinutes,
+            item.formulaireScore, item.skillsScore, item.rhScore, item.finalScore,
+            item.remarks, item.updatedAt
+          ]]);
+          return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Mis à jour' })).setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+    }
+    
+    if (action === 'delete') {
+      for (var i = 1; i &lt; data.length; i++) {
+        if (data[i][0] == item.id) {
+          sheet.deleteRow(i + 1);
+          return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Supprimé' })).setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+    }
+    
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+  }
+}</pre>
+                </div>
+
+                <!-- Reset Demo Data -->
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-300">Données de Démonstration</h4>
+                        <p class="text-[11px] text-slate-500">Réinitialiser les candidats locaux avec des exemples fictifs du club.</p>
+                    </div>
+                    <button id="resetDemoDataBtn" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs font-bold transition">
+                        <i class="fa-solid fa-arrows-rotate mr-1"></i> Réinitialiser Démo
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-darkslate-800 px-6 py-4 border-t border-slate-800 flex justify-end space-x-3">
+                <button id="saveSettingsBtn" class="px-5 py-2 rounded-xl bg-petroleum-500 hover:bg-petroleum-600 text-white text-xs font-bold transition">
+                    Enregistrer les paramètres
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL 3: DELETE CONFIRMATION MODAL         -->
+    <!-- ========================================== -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="relative w-full max-w-md bg-darkslate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden p-6 text-center space-y-4">
+            <div class="w-14 h-14 bg-red-500/10 border border-red-500/30 text-red-500 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-extrabold text-white">Confirmer la suppression</h3>
+                <p class="text-xs text-slate-400 mt-1">
+                    Voulez-vous vraiment supprimer l'évaluation de <span id="deleteCandidateName" class="font-bold text-slate-200">...</span> ? Cette action est irrémédiable.
+                </p>
+            </div>
+            <div class="flex items-center justify-center space-x-3 pt-2">
+                <button id="cancelDeleteBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition">
+                    Annuler
+                </button>
+                <button id="confirmDeleteBtn" class="px-5 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition">
+                    Oui, Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL 4: CANDIDATE DETAIL PREVIEW MODAL    -->
+    <!-- ========================================== -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
+        <div class="relative w-full max-w-2xl bg-darkslate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden my-8">
+            <div class="bg-darkslate-800/80 px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span id="detailRankBadge" class="w-8 h-8 rounded-lg bg-petroleum-500 text-white font-extrabold flex items-center justify-center text-sm shadow">
+                        #1
+                    </span>
+                    <div>
+                        <h3 id="detailFullName" class="text-base font-extrabold text-white">...</h3>
+                        <p id="detailEmail" class="text-xs text-slate-400">...</p>
+                    </div>
+                </div>
+                <button id="closeDetailModalBtn" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div id="detailContent" class="p-6 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                <!-- Dynamically populated detail view -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-3 pointer-events-none"></div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
